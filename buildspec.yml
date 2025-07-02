@@ -1,0 +1,24 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing Terraform and Ansible...
+      - terraform -version
+      - ansible --version
+
+  pre_build:
+    commands:
+      - echo "Downloading dynamic tfvars from S3..."
+      - aws s3 cp s3://splunk-deployment-test/final/terraform-20250702151407.tfvars terraform.tfvars
+      - echo "Pre-build phase complete."
+
+  build:
+    commands:
+      - chmod +x scripts/check_key.sh
+      - terraform init
+      - terraform apply -auto-approve
+
+  post_build:
+    commands:
+      - echo "EC2 Only Deployment Completed Successfully!"
